@@ -136,12 +136,12 @@ public class GraphNode implements Serializable {
 	public String edgesToString() {
 		StringBuilder edgeString = new StringBuilder();
 		for(GraphNode e : this.outgoingEdges){
-			edgeString.append(this.getId() + " " + e.getId() + "#");
+			edgeString.append(this.getId() + " " + e.getId() + DirectedGraphRepresentation.EDGE_SEPARATOR);
 		}
 		if (edgeString.length() == 0) {
 			return "";
 		}		
-		edgeString.setLength(edgeString.length() - 1); //delete last char, i.e. #
+		edgeString.setLength(edgeString.length() - DirectedGraphRepresentation.EDGE_SEPARATOR.length()); //delete last char, i.e. #
 		return edgeString.toString();
 	}
 	

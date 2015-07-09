@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
@@ -37,11 +38,15 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("G")
 public class DirectedGraphRepresentation implements Representation {
 			
+	private static final String NODE_SEPARATOR = "&&";
+	public static final String EDGE_SEPARATOR = "&&";
+	private static final String NODE_EDGE_SEPARATOR = "%%";
 	private static final long serialVersionUID = 5688462570989530911L;
 
 	protected List<GraphNode> nodes; 	
 	protected TIntIntHashMap nodesIdToGraphObjs;
 	protected List<NodeDistance> nodesDistances = null;
+	
 	public DirectedGraphRepresentation() {
 		this.nodes = new ArrayList<GraphNode>();
 		this.nodesIdToGraphObjs = new TIntIntHashMap(0, 0.5f,-1,-1);
@@ -53,17 +58,18 @@ public class DirectedGraphRepresentation implements Representation {
 		String tmpEdgeString;
 		for(GraphNode g : this.nodes){ //TODO: order nodes by Id
 			graphString.append(g.toString());
-			graphString.append("#");
+			graphString.append(NODE_SEPARATOR);
 		}
 		if (graphString.length() == 0) {
 			System.out.println("Empty Graph!!");
 			return "";
 		}		
-		graphString.setLength(graphString.length() - 1); //delete last char, i.e. #
+		graphString.setLength(graphString.length() - NODE_SEPARATOR.length()); //delete last separator
+		graphString.append(NODE_EDGE_SEPARATOR);
 		for(GraphNode g : this.nodes){
 			tmpEdgeString = g.edgesToString();
 			if (tmpEdgeString.length() > 0) {
-				graphString.append(tmpEdgeString + "#");
+				graphString.append(tmpEdgeString + EDGE_SEPARATOR);
 			}
 		}
 		return graphString.toString();
@@ -74,12 +80,12 @@ public class DirectedGraphRepresentation implements Representation {
 		String inputString = graphString.trim();
 		String[] nodeList = null;
 		String[] edgeList = null;
-		if (inputString.contains("%")) {
-			String[] resultString = inputString.split("%");
-			nodeList = resultString[0].split("#");
-			edgeList = resultString[1].split("#");
+		if (inputString.contains(NODE_EDGE_SEPARATOR)) {
+			String[] resultString = inputString.split(NODE_EDGE_SEPARATOR);
+			nodeList = resultString[0].split(NODE_SEPARATOR);
+			edgeList = resultString[1].split(EDGE_SEPARATOR);
 		}else { //no edges are present
-			nodeList = inputString.split("#");
+			nodeList = inputString.split(NODE_SEPARATOR);
 		}
 		//this.InitNodesData(nodeList.length);
 		for(String nodeS : nodeList){
@@ -147,6 +153,7 @@ public class DirectedGraphRepresentation implements Representation {
 	 * 
 	 * @return a list of GraphNode objects
 	 */
+	@JsonIgnore
 	public List<GraphNode> getNodeList() {
 		return this.nodes;
 	}
@@ -155,6 +162,7 @@ public class DirectedGraphRepresentation implements Representation {
 	 * Returns the number of nodes in the graph.
 	 * @return an int representing the number of nodes of the graph
 	 */
+	@JsonIgnore
 	public int getNumberOfNodes() {
 		return this.nodes.size();
 	}
@@ -238,6 +246,7 @@ public class DirectedGraphRepresentation implements Representation {
 	 * Returns the list of NodeDistance Objects
 	 * @return
 	 */
+	@JsonIgnore
 	public List<NodeDistance> getNodeDistances(){
 		if(this.nodesDistances==null){
 			computeNodeDistances();

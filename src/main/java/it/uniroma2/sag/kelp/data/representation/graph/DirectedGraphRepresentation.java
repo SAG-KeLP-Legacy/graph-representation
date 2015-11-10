@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -38,6 +41,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("G")
 public class DirectedGraphRepresentation implements Representation {
 			
+	private Logger logger = LoggerFactory.getLogger(DirectedGraphRepresentation.class);
+	
 	private static final String NODE_SEPARATOR = "&&";
 	public static final String EDGE_SEPARATOR = "&&";
 	private static final String NODE_EDGE_SEPARATOR = "%%";
@@ -264,6 +269,15 @@ public class DirectedGraphRepresentation implements Representation {
 		NodeDistance nodeDistance = new NodeDistance(this.nodes.get(firstNodeIndex), this.nodes.get(secondNodeIndex), distance);
 		
 		this.nodesDistances.add(nodeDistance);
+	}
+	
+	@Override
+	public boolean isCompatible(Representation rep) {
+		if (!( rep instanceof DirectedGraphRepresentation)){
+			logger.error("incompatible representations: " + this.getClass().getSimpleName() + " vs " + rep.getClass().getSimpleName());
+			return false;
+		}
+		return true;
 	}
 
 //	/**
